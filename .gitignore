@@ -1,0 +1,51 @@
+*.py[cod]
+*.log*
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.coveragerc
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+htmlcov/
+docs/_build/
+
+.DS_Store
+.version
+.env
+.cache
+.bin
+
+*.sqlite3
+temp.db
+
+media/*
+!media/.gitkeep
+static/CACHE
+static/bower_components

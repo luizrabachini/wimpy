@@ -1,0 +1,19 @@
+language: python
+
+python:
+  - 3.5.1
+
+cache: pip
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libncurses-dev libmysqlclient-dev nodejs
+
+install:
+  - cp contrib/localenv .env
+  - make install-bower
+  - make requirements-pip
+  - make requirements-js
+
+script:
+  - make test-travis
