@@ -39,7 +39,7 @@ A helper is available to automatic fix isort issues:
 
 To run unit tests, execute:
 
-    $ make test
+    $ make test-unit
 
 To run integration tests, execute:
 
@@ -48,6 +48,10 @@ To run integration tests, execute:
 To run a specific test, execute:
 
     $ make test-matching Q=[keyword]
+
+To run all tests, execute:
+
+    $ make test
 
 To check vulnerabilities of dependencies, execute:
 

@@ -62,21 +62,21 @@ compress:
 lint: clean
 	@flake8 src --exclude=venv,migrations
 	@isort --check src
+	@make clean
 
 isort-fix: clean
 	@isort src
-
-test: clean
-	@pytest -m "not integration"
 	@make clean
 
-test-all: clean
-	@pytest -x
+test-unit: clean
+	@pytest -m "not integration" --suppress-no-test-exit-code
 	@make clean
 
 test-integration: clean
-	@pytest -m integration --no-cov --suppress-no-test-exit-code
+	@pytest -m integration --suppress-no-test-exit-code
 	@make clean
+
+test: test-unit test-integration
 
 test-matching: clean
 	@pytest --pdb -k$(Q)
