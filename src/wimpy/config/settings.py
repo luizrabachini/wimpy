@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Local apps
+    'wimpy.healthcheck',
     'wimpy.events',
     # 3rd party apps
     'rest_framework',
