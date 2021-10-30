@@ -56,3 +56,9 @@ To run all tests, execute:
 To check vulnerabilities of dependencies, execute:
 
     $ make check-vulnerabilities
+
+
+## To Do
+
+- Validate json schema stored in `wimpy.events.models.EventType.data_schema`
+- Apply regex to validate fields `host` and `path` of `DEFAULT_EVENT_DATA_SCHEMA`
