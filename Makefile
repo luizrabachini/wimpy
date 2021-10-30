@@ -84,3 +84,13 @@ test-matching: clean
 
 check-vulnerabilities: clean
 	@safety check -r requirements/dev.txt
+
+
+# Helpers
+
+createtoken:
+	@curl -X POST -H "Content-Type: application/json" -d '{"username": "$(user)", "password": "$(password)"}' http://localhost:8000/api/token/
+
+purge-db:
+	@rm -f src/wimpy/db.sqlite3
+	@make migrate
