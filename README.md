@@ -1,6 +1,6 @@
 # Wimpy
 
-Events tracking framework to collect and analyse data across multiple origins.
+Events tracking application to collect and analyse data across multiple origins.
 
 
 ## Local Development

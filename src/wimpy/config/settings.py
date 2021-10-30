@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'rest_framework',
     'rest_framework_simplejwt',
-    'drf_yasg',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -94,7 +94,14 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Wimpy API',
+    'DESCRIPTION': 'Events tracking application',
+    'VERSION': '0.0.0',
 }
 
 
