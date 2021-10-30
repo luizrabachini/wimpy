@@ -29,7 +29,7 @@ requirements-pip:
 	@pip install --upgrade pip
 	@pip install -r requirements/dev.txt
 
-createsuperuser:
+create-superuser:
 	@$(DJANGO_CMD) createsuperuser
 
 install: requirements-apt requirements-pip migrate
@@ -88,7 +88,7 @@ check-vulnerabilities: clean
 
 # Helpers
 
-createtoken:
+create-token:
 	@curl -X POST -H "Content-Type: application/json" -d '{"username": "$(user)", "password": "$(password)"}' http://localhost:8000/api/token/
 
 purge-db:

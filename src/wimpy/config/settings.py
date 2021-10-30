@@ -1,6 +1,9 @@
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
+
+from wimpy.config import constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,6 +28,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
 ]
 
@@ -96,6 +100,33 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(
+        seconds=config(
+            'ACCESS_TOKEN_LIFETIME',
+            default=2 * constants.HOURS,
+            cast=int
+        )
+    ),
+    'REFRESH_TOKEN_LIFETIME': timedelta(
+        seconds=config(
+            'REFRESH_TOKEN_LIFETIME',
+            default=1 * constants.DAYS,
+            cast=int
+        )
+    ),
+    'ROTATE_REFRESH_TOKENS': config(
+        'ROTATE_REFRESH_TOKENS',
+        default=False,
+        cast=bool
+    ),
+    'BLACKLIST_AFTER_ROTATION': config(
+        'BLACKLIST_AFTER_ROTATION',
+        default=False,
+        cast=bool
+    ),
 }
 
 SPECTACULAR_SETTINGS = {
