@@ -89,7 +89,7 @@ check-vulnerabilities: clean
 # Helpers
 
 create-token:
-	@curl -X POST -H "Content-Type: application/json" -d '{"username": "$(user)", "password": "$(password)"}' http://localhost:8000/api/token/
+	@curl -X POST -H "Content-Type: application/json" -d '{"username": "$(user)", "password": "$(password)"}' http://localhost:8000/auth/token/
 
 purge-db:
 	@rm -f src/wimpy/db.sqlite3

@@ -1,11 +1,19 @@
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, reverse_lazy
+from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
 urlpatterns = [
     # Local apps
+    path(
+        '',
+        RedirectView.as_view(
+            permanent=False,
+            url=reverse_lazy('admin:login')
+        )
+    ),
     path(
         'healthcheck/',
         include(
@@ -18,7 +26,7 @@ urlpatterns = [
         admin.site.urls
     ),
     path(
-        'api/events/',
+        'events/',
         include(
             ('wimpy.events.urls', 'events'),
             namespace='events'
@@ -26,22 +34,22 @@ urlpatterns = [
     ),
     # 3rd party apps
     path(
-        'api/',
+        'docs/',
         SpectacularSwaggerView.as_view(url_name='schema'),
         name='swagger-ui'
     ),
     path(
-        'api/schema/',
+        'docs/schema/',
         SpectacularAPIView.as_view(),
         name='schema'
     ),
     path(
-        'api/token/',
+        'auth/token/',
         TokenObtainPairView.as_view(),
         name='token_obtain_pair'
     ),
     path(
-        'api/token/refresh/',
+        'auth/token/refresh/',
         TokenRefreshView.as_view(),
         name='token_refresh'
     ),

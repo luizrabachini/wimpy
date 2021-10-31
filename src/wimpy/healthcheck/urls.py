@@ -6,6 +6,6 @@ urlpatterns = [
     path(
         '',
         HealthCheckAPIView.as_view(),
-        name='all'
+        name='healthcheck'
     ),
 ]
