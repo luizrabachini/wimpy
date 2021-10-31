@@ -3,7 +3,7 @@ from pathlib import Path
 
 from decouple import Csv, config
 
-from wimpy.config import constants
+from wimpy import constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

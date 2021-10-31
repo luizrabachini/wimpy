@@ -17,6 +17,13 @@ urlpatterns = [
         'admin/',
         admin.site.urls
     ),
+    path(
+        'api/events/',
+        include(
+            ('wimpy.events.urls', 'events'),
+            namespace='events'
+        )
+    ),
     # 3rd party apps
     path(
         'api/',
