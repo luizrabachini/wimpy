@@ -1,5 +1,3 @@
-from typing import Dict
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -17,11 +15,7 @@ class EventAPIView(APIView):
     serializer_class = EventSerializer
 
     def post(self, request, *args, **kwargs):
-        data: Dict = {
-            'application_id': request.user.username
-        }
-        data.update(request.data)
-        serializer = self.serializer_class(data=data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # To DO: register event here
+        serializer.save(user=request.user)
         return Response(status=status.HTTP_201_CREATED)

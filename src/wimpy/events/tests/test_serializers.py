@@ -14,7 +14,6 @@ class TestEventSerializer:
     @pytest.mark.parametrize(
         'field,value',
         [
-            ('application_id', ''),
             ('session_id', ''),
             ('category', ''),
             ('name', ''),

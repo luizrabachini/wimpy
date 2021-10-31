@@ -1,4 +1,5 @@
 import uuid
+from typing import Dict
 
 from rest_framework import serializers
 
@@ -9,10 +10,12 @@ __all__ = ['EventSerializer']
 
 class EventSerializer(serializers.Serializer):
 
-    application_id = serializers.CharField(max_length=64)
     event_id = serializers.UUIDField(default=str(uuid.uuid4()))
     session_id = serializers.UUIDField()
     category = serializers.SlugField(max_length=64)
     name = serializers.SlugField(max_length=64)
     data = serializers.DictField()
     timestamp = serializers.DateTimeField(format=DEFAULT_DATETIME_FORMAT)
+
+    def create(self, validated_data: Dict):
+        return ''
