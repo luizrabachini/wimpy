@@ -1,5 +1,6 @@
 -r prod.txt
 
+bump2version==1.0.1
 flake8==4.0.1
 ipdb==0.13.9
 isort==5.9.3

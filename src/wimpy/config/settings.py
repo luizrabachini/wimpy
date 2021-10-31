@@ -3,7 +3,7 @@ from pathlib import Path
 
 from decouple import Csv, config
 
-from wimpy import constants
+from wimpy import constants, __version__
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -133,7 +133,7 @@ SIMPLE_JWT = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Wimpy API',
     'DESCRIPTION': 'Events tracking application',
-    'VERSION': '0.0.0',
+    'VERSION': __version__,
 }
 
 

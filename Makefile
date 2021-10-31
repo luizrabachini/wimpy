@@ -57,7 +57,7 @@ compress:
 	$(DJANGO_CMD) compress
 
 
-# Tests
+# Develop
 
 lint: clean
 	@flake8 src --exclude=venv,migrations
@@ -84,6 +84,18 @@ test-matching: clean
 
 check-vulnerabilities: clean
 	@safety check -r requirements/dev.txt
+
+
+# Publish
+
+release-patch:
+	@bump2version patch
+
+release-minor:
+	@bump2version minor
+
+release-major:
+	@bump2version major
 
 
 # Helpers
