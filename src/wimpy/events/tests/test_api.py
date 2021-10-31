@@ -38,3 +38,11 @@ class TestEventAPIView:
             content_type='application/json'
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_should_authorize_client(self, valid_event_data, client):
+        response = client.post(
+            reverse('events:events'),
+            valid_event_data,
+            content_type='application/json'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
