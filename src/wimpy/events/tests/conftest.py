@@ -30,6 +30,7 @@ def event_type(event_category) -> EventType:
 @pytest.fixture
 def valid_event_data(event_type) -> Dict:
     return {
+        'application_id': 'test',
         'session_id': str(uuid.uuid4()),
         'category': event_type.category.slug,
         'name': event_type.slug,

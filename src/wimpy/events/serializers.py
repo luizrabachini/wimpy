@@ -9,6 +9,7 @@ __all__ = ['EventSerializer']
 
 class EventSerializer(serializers.Serializer):
 
+    application_id = serializers.CharField(max_length=64)
     event_id = serializers.UUIDField(default=str(uuid.uuid4()))
     session_id = serializers.UUIDField()
     category = serializers.SlugField(max_length=64)
