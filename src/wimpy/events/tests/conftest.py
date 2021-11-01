@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest
 
-from wimpy.events.models import EventCategory, EventType
+from wimpy.events.models import Event, EventCategory, EventSchema, EventType
 
 
 @pytest.fixture
@@ -17,9 +17,8 @@ def event_category() -> EventCategory:
 
 
 @pytest.fixture
-def event_type(event_category) -> EventType:
+def event_type() -> EventType:
     event_type: EventType = EventType(
-        category=event_category,
         name='Some type',
         description='Some type description',
     )
@@ -28,13 +27,41 @@ def event_type(event_category) -> EventType:
 
 
 @pytest.fixture
-def valid_event_data(event_type) -> Dict:
+def event_schema(
+    event_category: EventCategory,
+    event_type: EventType
+) -> EventSchema:
+    event_schema: EventSchema = EventSchema(
+        category=event_category,
+        type=event_type,
+    )
+    event_schema.save()
+    return event_schema
+
+
+@pytest.fixture
+def event(event_schema):
+    return Event(
+        session_id='d2cff3b5-e16e-40f6-b97e-9c67013440ca',
+        category=event_schema.category,
+        name=event_schema.type,
+        data={
+            'host': 'localhost',
+            'path': '/',
+        },
+        timestamp='2022-10-12 10:05:21.123456',
+    )
+
+
+@pytest.fixture
+def valid_event_data(event_schema) -> Dict:
     return {
         'session_id': str(uuid.uuid4()),
-        'category': event_type.category.slug,
-        'name': event_type.slug,
+        'category': event_schema.category.slug,
+        'name': event_schema.type.slug,
         'data': {
-            'some': 'data'
+            'host': 'localhost',
+            'path': '/',
         },
         'timestamp': '2022-10-12 10:05:21.123456',
     }

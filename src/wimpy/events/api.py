@@ -1,21 +1,17 @@
-from rest_framework import status
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
+from wimpy.events.filters import EventFilter
+from wimpy.events.models import Event
 from wimpy.events.serializers import EventSerializer
 
 __all__ = ['EventAPIView']
 
 
-class EventAPIView(APIView):
+class EventAPIView(generics.ListCreateAPIView):
 
     permission_classes = [IsAuthenticated]
 
+    queryset = Event.objects.all()
     serializer_class = EventSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
-        return Response(status=status.HTTP_201_CREATED)
+    filterset_class = EventFilter

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'wimpy.healthcheck',
     'wimpy.events',
     # 3rd party apps
+    'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -63,6 +64,36 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wimpy.config.wsgi.application'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+            '%(process)d %(thread)d %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        }
+    },
+    'root': {
+        'level': config('ROOT_LOG_LEVEL', default='INFO'),
+        'handlers': ['console']
+    },
+    'django': {
+        'level': config('DJANGO_LOG_LEVEL', default='INFO'),
+        'handlers': ['console']
+    },
+    'wimpy': {
+        'level': config('WIMPY_LOG_LEVEL', default='INFO'),
+        'handlers': ['console']
+    },
+}
+
 
 # Storage
 
@@ -74,6 +105,26 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CACHES = {
+    'default': {
+        'BACKEND': config(
+            'DEFAULT_CACHE_BACKEND',
+            default='django.core.cache.backends.dummy.DummyCache'
+        ),
+        'LOCATION': config(
+            'DEFAULT_CACHE_LOCATION',
+            default=''
+        ),
+        'OPTIONS': {
+            'TIMEOUT': config(
+                'DEFAULT_CACHE_TIMEOUT',
+                cast=float,
+                default=2
+            )
+        }
+    }
+}
 
 
 # Security
@@ -94,6 +145,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Local apps
+
+EVENT_DATA_SCHEMA_CACHE_TTL = config(
+    'EVENT_DATA_SCHEMA_CACHE_TTL',
+    cast=float,
+    default=1 * constants.HOURS
+)
+
+
 # 3rd party apps
 
 REST_FRAMEWORK = {
@@ -101,6 +161,13 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+    'DEFAULT_PAGINATION_CLASS': (
+        'rest_framework.pagination.LimitOffsetPagination'
+    ),
+    'PAGE_SIZE': config('DEFAULT_API_PAGE_SIZE', cast=int, default=50),
 }
 
 SIMPLE_JWT = {

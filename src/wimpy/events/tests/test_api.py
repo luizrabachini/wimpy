@@ -2,42 +2,21 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
+from wimpy.events.models import Event
+
 
 @pytest.mark.django_db
 class TestEventAPIView:
 
-    def test_should_create_event(self, valid_event_data, auth_client):
+    def test_should_register_new_event(self, valid_event_data, auth_client):
+        assert Event.objects.count() == 0
         response = auth_client.post(
             reverse('events:events'),
             valid_event_data,
             content_type='application/json'
         )
         assert response.status_code == status.HTTP_201_CREATED
-
-    @pytest.mark.parametrize(
-        'field,value',
-        [
-            ('session_id', ''),
-            ('category', ''),
-            ('name', ''),
-            ('data', ''),
-            ('timestamp', '01/06/2017 18:43:26'),
-        ]
-    )
-    def test_should_return_bad_request(
-        self,
-        field,
-        value,
-        valid_event_data,
-        auth_client
-    ):
-        valid_event_data[field] = value
-        response = auth_client.post(
-            reverse('events:events'),
-            valid_event_data,
-            content_type='application/json'
-        )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert Event.objects.count() == 1
 
     def test_should_authorize_client(self, valid_event_data, client):
         response = client.post(
@@ -46,3 +25,14 @@ class TestEventAPIView:
             content_type='application/json'
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_should_validate_data(self, valid_event_data, auth_client):
+        valid_event_data['data'] = {
+            'host': 'localhost',
+        }
+        response = auth_client.post(
+            reverse('events:events'),
+            valid_event_data,
+            content_type='application/json'
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

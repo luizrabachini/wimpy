@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from wimpy.events.constants import get_default_event_data_schema
 
-__all__ = ['EventCategory', 'EventType']
+__all__ = ['EventCategory', 'EventType', 'EventSchema', 'Event']
 
 
 class EventCategory(models.Model):
@@ -30,7 +30,7 @@ class EventCategory(models.Model):
         max_length=64,
         null=False,
         blank=False,
-        unique=True,
+        db_index=True,
         editable=False,
     )
 
@@ -43,8 +43,6 @@ class EventCategory(models.Model):
 
 
 class EventType(models.Model):
-
-    category = models.ForeignKey('EventCategory', on_delete=models.CASCADE)
 
     name = models.CharField(
         verbose_name=_('Type name'),
@@ -67,9 +65,22 @@ class EventType(models.Model):
         max_length=64,
         null=False,
         blank=False,
-        unique=True,
+        db_index=True,
         editable=False,
     )
+
+    def __str__(self):
+        return self.slug or ''
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(EventType, self).save(*args, **kwargs)
+
+
+class EventSchema(models.Model):
+
+    category = models.ForeignKey('EventCategory', on_delete=models.CASCADE)
+    type = models.ForeignKey('EventType', on_delete=models.CASCADE)
 
     data_schema = models.JSONField(
         verbose_name=_('Event data schema'),
@@ -79,9 +90,28 @@ class EventType(models.Model):
         default=get_default_event_data_schema,
     )
 
-    def __str__(self):
-        return self.slug or ''
+    class Meta:
+        unique_together = ('category', 'type',)
 
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(EventType, self).save(*args, **kwargs)
+    def __str__(self):
+        return f'{self.category} - {self.type}'
+
+
+class Event(models.Model):
+
+    session_id = models.UUIDField(db_index=True)
+    category = models.ForeignKey('EventCategory', on_delete=models.CASCADE)
+    name = models.ForeignKey('EventType', on_delete=models.CASCADE)
+    data = models.JSONField(
+        verbose_name=_('Event data'),
+        help_text=_('Event data sent from client'),
+        null=False,
+        blank=False,
+    )
+    timestamp = models.DateTimeField(
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        ordering = ('timestamp',)

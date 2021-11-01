@@ -11,6 +11,7 @@ DEFAULT_EVENT_DATA_SCHEMA = {
             'type': 'string'
         },
     },
+    'required': ['host', 'path']
 }
 
 

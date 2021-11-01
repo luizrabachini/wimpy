@@ -4,17 +4,14 @@ import pytest
 from django.db.utils import IntegrityError
 
 from wimpy.events.constants import get_default_event_data_schema
-from wimpy.events.models import EventCategory, EventType
+from wimpy.events.models import EventCategory, EventSchema, EventType
 
 
 @pytest.mark.django_db
 class TestEventCategory:
 
     def test_should_generate_slug_on_save(self):
-        event_category: EventCategory = EventCategory(
-            name='Some category',
-            description='Some description',
-        )
+        event_category: EventCategory = EventCategory(name='Some category')
         assert event_category.slug == ''
         assert str(event_category) == event_category.slug
         event_category.save()
@@ -38,12 +35,8 @@ class TestEventCategory:
 @pytest.mark.django_db
 class TestEventType:
 
-    def test_should_generate_slug_on_save(self, event_category):
-        event_type: EventType = EventType(
-            category=event_category,
-            name='Some type',
-            description='Some description',
-        )
+    def test_should_generate_slug_on_save(self):
+        event_type: EventType = EventType(name='Some type')
         assert event_type.slug == ''
         assert str(event_type) == event_type.slug
         event_type.save()
@@ -57,17 +50,32 @@ class TestEventType:
 
     def test_should_keep_slug_unique(self, event_type):
         new_event_type: EventType = EventType(
-            category=event_type.category,
             name=event_type.name,
             description='Different description',
         )
         with pytest.raises(IntegrityError):
             new_event_type.save()
 
-    def test_should_use_default_event_data_schema(self, event_type):
-        assert event_type.data_schema == get_default_event_data_schema()
 
-    def test_should_use_custom_event_data_schema(self, event_category):
+@pytest.mark.django_db
+class TestEventSchema:
+
+    def test_should_use_default_event_data_schema(
+        self,
+        event_category,
+        event_type
+    ):
+        event_schema: EventSchema = EventSchema(
+            category=event_category,
+            type=event_type
+        )
+        assert event_schema.data_schema == get_default_event_data_schema()
+
+    def test_should_use_custom_event_data_schema(
+        self,
+        event_category,
+        event_type
+    ):
         data_schema: Dict = {
             'type': 'object',
             'properties': {
@@ -76,11 +84,9 @@ class TestEventType:
                 }
             }
         }
-        event_type: EventType = EventType(
+        event_schema: EventSchema = EventSchema(
             category=event_category,
-            name='Some type',
-            description='Some description',
-            data_schema=data_schema
+            type=event_type,
+            data_schema=data_schema,
         )
-        event_type.save()
-        assert event_type.data_schema == data_schema
+        assert event_schema.data_schema == data_schema
