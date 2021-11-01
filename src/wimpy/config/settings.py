@@ -3,15 +3,15 @@ from pathlib import Path
 
 from decouple import Csv, config
 
-from wimpy import constants, __version__
+from wimpy import __version__, constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='changeme')
 
 DEBUG = config('DJANGO_DEBUG', cast=bool, default=False)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='localhost')
 
 
 # Application
@@ -150,6 +150,11 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Media
+# Assets
 
 STATIC_URL = '/static/'
+STATIC_ROOT = str(BASE_DIR.parent / 'staticfiles')
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]

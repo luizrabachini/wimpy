@@ -22,7 +22,16 @@ Install dependencies:
 
 ### Run
 
-To run project execute:
+All dependencies are managed by [docker-compose](https://docs.docker.com/compose/install/#install-compose). To start them, execute:
+
+    $ sudo docker-compose up
+
+To run application inside a container, execute:
+
+    $ sudo docker-compose --file docker-compose-app.yml build  # update image
+    $ sudo docker-compose --file docker-compose-app.yml up  # launch
+
+To run application locally, execute:
 
     $ make runserver
 
@@ -62,3 +71,4 @@ To check vulnerabilities of dependencies, execute:
 
 - Validate json schema stored in `wimpy.events.models.EventType.data_schema`
 - Apply regex to validate fields `host` and `path` of `DEFAULT_EVENT_DATA_SCHEMA`
+- Store static files in a external bucket and remove from Dockerfile

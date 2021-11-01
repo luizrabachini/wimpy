@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  proxy:
+    image: nginx:1.13-alpine-perl
+    volumes:
+      - ./server/nginx.conf:/etc/nginx/nginx.conf
+      - shared:/var/run/nginx
+      - static:/app/staticfiles
+    ports:
+      - 80:80
+    networks:
+      - wimpy_wimpy-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      bash -c "gunicorn wimpy.config.wsgi --bind unix:/var/run/nginx/wsgi.sock"
+    environment:
+      DJANGO_SETTINGS_MODULE: wimpy.config.settings
+      SECRET_KEY: changeme
+    volumes:
+      - shared:/var/run/nginx
+      - static:/app/staticfiles
+    networks:
+      - wimpy_wimpy-network
+
+networks:
+  wimpy_wimpy-network:
+    external: true
+
+volumes:
+  shared:
+  static:
