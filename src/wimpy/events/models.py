@@ -1,7 +1,11 @@
+from datetime import datetime
+from typing import Dict
+
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
+from wimpy.constants import DEFAULT_DATETIME_FORMAT
 from wimpy.events.constants import get_default_event_data_schema
 
 __all__ = ['EventCategory', 'EventType', 'EventSchema', 'Event']
@@ -115,3 +119,15 @@ class Event(models.Model):
 
     class Meta:
         ordering = ('timestamp',)
+
+    def to_json(self) -> Dict:
+        return {
+            'session_id': str(self.session_id),
+            'category': self.category.slug,
+            'name': self.name.slug,
+            'data': self.data,
+            'timestamp': datetime.strftime(
+                self.timestamp,
+                DEFAULT_DATETIME_FORMAT
+            ),
+        }

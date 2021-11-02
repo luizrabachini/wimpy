@@ -84,6 +84,10 @@ LOGGING = {
         'level': config('ROOT_LOG_LEVEL', default='INFO'),
         'handlers': ['console']
     },
+    'kafka': {
+        'level': config('KAFKA_LOG_LEVEL', default='INFO'),
+        'handlers': ['console']
+    },
     'django': {
         'level': config('DJANGO_LOG_LEVEL', default='INFO'),
         'handlers': ['console']
@@ -151,6 +155,52 @@ EVENT_DATA_SCHEMA_CACHE_TTL = config(
     'EVENT_DATA_SCHEMA_CACHE_TTL',
     cast=float,
     default=1 * constants.HOURS
+)
+
+ASYNC_EVENTS_ENABLED = config(
+    'ASYNC_EVENTS_ENABLED',
+    cast=bool,
+    default=True
+)
+ASYNC_EVENTS_TOPIC = config(
+    'ASYNC_EVENTS_TOPIC',
+    default='events'
+)
+
+
+# Resources
+
+KAFKA_BOOTSTRAP_SERVERS = config(
+    'KAFKA_BOOTSTRAP_SERVERS',
+    default='127.0.0.1:9092'
+)
+
+KAFKA_CONSUMER_CLIENT_ID = config(
+    'KAFKA_CONSUMER_CLIENT_ID',
+    default='wimpy'
+)
+KAFKA_CONSUMER_GROUP_ID = config(
+    'KAFKA_CONSUMER_GROUP_ID',
+    default='events-consumer'
+)
+KAFKA_CONSUMER_AUTO_COMMIT = config(
+    'KAFKA_CONSUMER_AUTO_COMMIT',
+    cast=bool,
+    default=True
+)
+KAFKA_CONSUMER_OFFSET_RESET = config(
+    'KAFKA_CONSUMER_OFFSET_RESET',
+    default='earliest'
+)
+KAFKA_CONSUMER_MAX_POLL_RECORDS = config(
+    'KAFKA_CONSUMER_MAX_POLL_RECORDS',
+    cast=int,
+    default=100
+)
+KAFKA_CONSUMER_MAX_POOL_INTERVAL = config(
+    'KAFKA_CONSUMER_MAX_POOL_INTERVAL',
+    cast=int,
+    default=10000
 )
 
 

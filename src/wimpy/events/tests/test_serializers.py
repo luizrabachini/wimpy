@@ -6,10 +6,59 @@ from django.conf import settings
 
 from wimpy.events.models import EventCategory, EventSchema, EventType
 from wimpy.events.serializers import EventSerializer
+from wimpy.helpers.data import serialize_data
 
 
 @pytest.mark.django_db
 class TestEventSerializer:
+
+    def test_should_reset_broker(self):
+        EventSerializer._broker['kafka_producer'] = mock.Mock()
+        EventSerializer.reset()
+        assert EventSerializer._broker['kafka_producer'] is None
+
+    def test_should_initialize_kafka(
+        self,
+        valid_event_data: Dict
+    ):
+        with mock.patch(
+            'wimpy.events.serializers.KafkaProducer'
+        ) as kafka_mock:
+            producer: mock.Mock = mock.Mock()
+            kafka_mock.return_value = producer
+            serializer: EventSerializer = EventSerializer(
+                data=valid_event_data
+            )
+            assert serializer._broker['kafka_producer'] is None
+            assert serializer.kafka_producer is producer
+            assert serializer._broker['kafka_producer'] is producer
+            kafka_mock.assert_called_once_with(
+                bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+                value_serializer=serialize_data,
+            )
+
+    def test_should_keep_kafka_connected(
+        self,
+        valid_event_data: Dict
+    ):
+        with mock.patch(
+            'wimpy.events.serializers.KafkaProducer'
+        ) as kafka_mock:
+            producer: mock.Mock = mock.Mock()
+            kafka_mock.return_value = producer
+            serializer_a: EventSerializer = EventSerializer(
+                data=valid_event_data
+            )
+            serializer_b: EventSerializer = EventSerializer(
+                data=valid_event_data
+            )
+            assert serializer_a._broker['kafka_producer'] is None
+            assert serializer_b._broker['kafka_producer'] is None
+            assert serializer_a.kafka_producer is producer
+            assert serializer_b.kafka_producer is serializer_a.kafka_producer
+            assert serializer_a._broker['kafka_producer'] is producer
+            assert serializer_b._broker['kafka_producer'] is producer
+            assert kafka_mock.call_count == 1
 
     def test_get_data_schema(self, event_schema: EventSchema):
         data_schema: Dict = EventSerializer.get_data_schema(
@@ -121,3 +170,8 @@ class TestEventSerializer:
         serializer: EventSerializer = EventSerializer(data=valid_event_data)
         assert not serializer.is_valid()
         assert 'Event schema not found' in caplog.text
+
+    def test_should_create_idempotency_key(self, valid_event_data: Dict):
+        serializer: EventSerializer = EventSerializer(data=valid_event_data)
+        serializer.is_valid()
+        assert serializer.validated_data['idempotency_key']

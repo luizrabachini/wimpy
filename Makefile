@@ -50,6 +50,9 @@ shell: clean
 runserver: clean
 	@$(DJANGO_CMD) runserver 0.0.0.0:8000
 
+runconsumer: clean
+	@$(DJANGO_CMD) consumer
+
 collectstatic:
 	$(DJANGO_CMD) collectstatic --noinput
 

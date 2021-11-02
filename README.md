@@ -71,4 +71,6 @@ To check vulnerabilities of dependencies, execute:
 
 - Validate json schema stored in `wimpy.events.models.EventType.data_schema`
 - Apply regex to validate fields `host` and `path` of `DEFAULT_EVENT_DATA_SCHEMA`
-- Store static files in a external bucket and remove from Dockerfile
+- Store static files in external bucket and remove from `Dockerfile`
+- Add generic interface of brokers to create a backend integration
+- Return status 202 - Accepted when API is writing events asynchronously

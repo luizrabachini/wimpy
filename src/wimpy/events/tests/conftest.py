@@ -1,9 +1,11 @@
 import uuid
 from typing import Dict
+from unittest import mock
 
 import pytest
 
 from wimpy.events.models import Event, EventCategory, EventSchema, EventType
+from wimpy.events.serializers import EventSerializer
 
 
 @pytest.fixture
@@ -65,3 +67,41 @@ def valid_event_data(event_schema) -> Dict:
         },
         'timestamp': '2022-10-12 10:05:21.123456',
     }
+
+
+@pytest.fixture(autouse=True)
+def reset_event_serializer():
+    EventSerializer.reset()
+
+
+@pytest.fixture
+def consumer_sleep_mock() -> mock.Mock:
+    with mock.patch(
+        'wimpy.events.consumers.sleep'
+    ) as sleep_mock:
+        yield sleep_mock
+
+
+@pytest.fixture
+def consumer_kafka_mock() -> mock.Mock:
+    with mock.patch(
+        'wimpy.events.consumers.EventConsumer.kafka_consumer'
+    ) as kafka_mock:
+        yield kafka_mock
+
+
+@pytest.fixture
+def consumer_stopped_mock() -> mock.Mock:
+    with mock.patch(
+        'wimpy.events.consumers.EventConsumer.stopped',
+        new_callable=mock.PropertyMock
+    ) as stopped_mock:
+        yield stopped_mock
+
+
+@pytest.fixture
+def consumer_process_mock() -> mock.Mock:
+    with mock.patch(
+        'wimpy.events.consumers.EventConsumer._process'
+    ) as process_mock:
+        yield process_mock

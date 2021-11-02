@@ -1,11 +1,14 @@
 import logging
+import uuid
 from typing import Dict
 
 from django.conf import settings
 from django.core.cache import caches
 from jsonschema import ValidationError, validate
+from kafka import KafkaProducer
 from rest_framework import serializers
 
+from wimpy.helpers.data import serialize_data
 from wimpy.events.models import Event, EventCategory, EventSchema, EventType
 
 __all__ = ['EventSerializer']
@@ -17,6 +20,10 @@ cache = caches['default']
 
 class EventSerializer(serializers.ModelSerializer):
 
+    idempotency_key: serializers.UUIDField = serializers.UUIDField(
+        default=str(uuid.uuid4())
+    )
+
     category: serializers.SlugRelatedField = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=EventCategory.objects.all(),
@@ -26,9 +33,31 @@ class EventSerializer(serializers.ModelSerializer):
         queryset=EventType.objects.all(),
     )
 
+    _broker: Dict = {
+        'kafka_producer': None
+    }
+
     class Meta:
         model = Event
         exclude = ('id',)
+
+    @classmethod
+    def reset(cls):
+        cls._broker['kafka_producer'] = None
+
+    @property
+    def kafka_producer(self) -> KafkaProducer:
+        if not self._broker['kafka_producer']:
+            logger.info(
+                'Connecting to Kafka '
+                f'Servers {settings.KAFKA_BOOTSTRAP_SERVERS}'
+            )
+            self._broker['kafka_producer'] = KafkaProducer(
+                bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+                value_serializer=serialize_data,
+            )
+            logger.info('Connected with Kafka Servers')
+        return self._broker['kafka_producer']
 
     @classmethod
     def get_data_schema(
@@ -90,3 +119,29 @@ class EventSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Data schema not found')
 
         return data
+
+    def create(self, validated_data) -> Event:
+        idempotency_key: str = validated_data.pop('idempotency_key')
+        event = Event(**validated_data)
+
+        if settings.ASYNC_EVENTS_ENABLED:
+            try:
+                data: Dict = event.to_json()
+                logger.info(
+                    f'Sending data {data} to '
+                    f'topic {settings.ASYNC_EVENTS_TOPIC}'
+                )
+                result = self.kafka_producer.send(
+                    settings.ASYNC_EVENTS_TOPIC,
+                    data
+                )
+                logger.info(f'Data sent with result {result}')
+            except Exception:
+                logger.exception('Unknown error on publish data {data}')
+                raise
+
+            return event
+
+        event.save()
+
+        return event
