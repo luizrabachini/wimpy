@@ -1,39 +1,58 @@
 # Wimpy
 
-Events tracking application to collect and analyse data across multiple origins.
+Events tracking application to collect and analyse data across multiple origins
 
 
 ## Local Development
 
-### Install
+### Install (Ubuntu)
 
-Create a virtualenv with python3.9 using a virtual enrironment like [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/):
+Create a virtualenv with `Python 3.9` using a virtual enrironment like [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/):
 
     $ mkvirtualenv wimpy -p /usr/bin/python3.9
+
+Install OS dependencies:
+
+    $ make requirements-apt
+
+Install Python dependencies:
+
+    $ make requirements-pip
 
 Configure environment variables:
 
     $ make configure-env
 
-Install dependencies:
-
-    $ make install
-
 
 ### Run
 
-All dependencies are managed by [docker-compose](https://docs.docker.com/compose/install/#install-compose). To start them, execute:
+All application dependencies are hosted by [Docker](https://docs.docker.com/compose/install/) and managed by [Docker Compose](https://docs.docker.com/compose/install/#install-compose). To start them, execute:
 
     $ sudo docker-compose up
 
-To run application inside a container, execute:
+To initialize database, execute:
+
+    $ make migrate
+
+To run API locally, execute:
+
+    $ make runserver
+
+To run consumer locally, execute:
+
+    $ make runconsumer
+
+
+## Docker Development
+
+Start dependencies using `docker-compose.yml`:
+
+    $ sudo docker-compose up
+
+To run API and consumer inside a container, execute:
 
     $ sudo docker-compose --file docker-compose-app.yml build  # update image
     $ sudo docker-compose --file docker-compose-app.yml up  # launch
-
-To run application locally, execute:
-
-    $ make runserver
 
 
 ### Test

@@ -10,23 +10,13 @@ services:
     image: mysql:8.0.23
     command: --default-authentication-plugin=mysql_native_password
     ports:
-      - 3307:3306
-    expose:
-      - 3307
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: 123
       MYSQL_DATABASE: wimpy
     volumes:
       - /tmp/wimpy:/var/lib/mysql
-    networks:
-      - wimpy-network
-
-  mongodb:
-    image: mongo:4.4.3
-    ports:
-      - "27017:27017"
+      - ./contrib/data:/docker-entrypoint-initdb.d
     networks:
       - wimpy-network
 

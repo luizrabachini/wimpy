@@ -56,9 +56,6 @@ runconsumer: clean
 collectstatic:
 	$(DJANGO_CMD) collectstatic --noinput
 
-compress:
-	$(DJANGO_CMD) compress
-
 
 # Develop
 

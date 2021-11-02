@@ -8,8 +8,8 @@ from jsonschema import ValidationError, validate
 from kafka import KafkaProducer
 from rest_framework import serializers
 
-from wimpy.helpers.data import serialize_data
 from wimpy.events.models import Event, EventCategory, EventSchema, EventType
+from wimpy.helpers.data import serialize_data
 
 __all__ = ['EventSerializer']
 
@@ -122,6 +122,8 @@ class EventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data) -> Event:
         idempotency_key: str = validated_data.pop('idempotency_key')
+        logger.debug(f'Received idempotency key {idempotency_key}')
+
         event = Event(**validated_data)
 
         if settings.ASYNC_EVENTS_ENABLED:

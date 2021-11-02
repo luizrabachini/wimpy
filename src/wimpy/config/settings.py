@@ -103,9 +103,27 @@ LOGGING = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': config(
+            'DEFAULT_DB_BACKEND',
+            default='django.db.backends.sqlite3'
+        ),
+        'HOST': config(
+            'DEFAULT_DB_HOST',
+            default=''
+        ),
+        'NAME': config(
+            'DEFAULT_DB_NAME',
+            default=BASE_DIR / 'db.sqlite3'
+        ),
+        'USER': config(
+            'DEFAULT_DB_USERNAME',
+            default=''
+        ),
+        'PASSWORD': config(
+            'DEFAULT_DB_PASSWORD',
+            default=''
+        ),
+    },
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -121,12 +139,11 @@ CACHES = {
             default=''
         ),
         'OPTIONS': {
-            'TIMEOUT': config(
-                'DEFAULT_CACHE_TIMEOUT',
-                cast=float,
-                default=2
+            'CLIENT_CLASS': config(
+                'DEFAULT_CACHE_CLIENT_CLASS',
+                default=''
             )
-        }
+        },
     }
 }
 
