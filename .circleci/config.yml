@@ -1,0 +1,22 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.9.0
+    steps:
+      - checkout
+      - run: make requirements-apt
+      - run: make requirements-pip
+  test:
+    docker:
+      - image: cimg/python:3.9.0
+    steps:
+      - checkout
+      - run: make test-unit
+
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - test
