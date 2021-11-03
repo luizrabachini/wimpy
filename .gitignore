@@ -29,6 +29,7 @@ pip-log.txt
 .coveragerc
 .tox
 nosetests.xml
+coverage.xml
 
 # Translations
 *.mo
@@ -49,3 +50,4 @@ media/*
 !media/.gitkeep
 static/CACHE
 static/bower_components
+
