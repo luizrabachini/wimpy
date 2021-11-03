@@ -4,7 +4,7 @@ import pytest
 from django.db.utils import IntegrityError
 
 from wimpy.events.constants import get_default_event_data_schema
-from wimpy.events.models import EventCategory, EventSchema, EventType
+from wimpy.events.models import Event, EventCategory, EventSchema, EventType
 
 
 @pytest.mark.django_db
@@ -22,6 +22,9 @@ class TestEventCategory:
         event_category.name = 'Name changed'
         event_category.save()
         assert event_category.slug == 'name-changed'
+
+    def test_should_return_slug_in_str(self, event_category):
+        assert str(event_category) == event_category.slug
 
     def test_should_keep_slug_unique(self, event_category):
         new_event_category: EventCategory = EventCategory(
@@ -47,6 +50,9 @@ class TestEventType:
         event_type.name = 'Name changed'
         event_type.save()
         assert event_type.slug == 'name-changed'
+
+    def test_should_return_slug_in_str(self, event_type):
+        assert str(event_type) == event_type.slug
 
     def test_should_keep_slug_unique(self, event_type):
         new_event_type: EventType = EventType(
@@ -90,3 +96,24 @@ class TestEventSchema:
             data_schema=data_schema,
         )
         assert event_schema.data_schema == data_schema
+
+    def test_should_return_custom_str(self, event_schema):
+        assert str(event_schema) == (
+            f'{event_schema.category} - {event_schema.type}'
+        )
+
+
+@pytest.mark.django_db
+class TestEvent:
+
+    def test_should_return_dict_to_json(self, event: Event):
+        assert event.to_json() == {
+            'session_id': 'd2cff3b5-e16e-40f6-b97e-9c67013440ca',
+            'category': 'some-category',
+            'name': 'some-type',
+            'data': {
+                'host': 'localhost',
+                'path': '/'
+            },
+            'timestamp': '2022-10-12 10:05:21.123456'
+        }

@@ -7,5 +7,4 @@ djangorestframework-simplejwt==5.0.0
 drf-spectacular==0.20.2
 jsonschema==4.1.2
 kafka-python==2.0.2
-luizalabs-django-toolkit==2.2.0
 python-decouple==3.5

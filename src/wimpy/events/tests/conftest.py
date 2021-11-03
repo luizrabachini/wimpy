@@ -1,9 +1,11 @@
 import uuid
+from datetime import datetime
 from typing import Dict
 from unittest import mock
 
 import pytest
 
+from wimpy.constants import DEFAULT_DATETIME_FORMAT
 from wimpy.events.models import Event, EventCategory, EventSchema, EventType
 from wimpy.events.serializers import EventSerializer
 
@@ -42,7 +44,7 @@ def event_schema(
 
 
 @pytest.fixture
-def event(event_schema):
+def event(event_schema: EventSchema):
     return Event(
         session_id='d2cff3b5-e16e-40f6-b97e-9c67013440ca',
         category=event_schema.category,
@@ -51,7 +53,10 @@ def event(event_schema):
             'host': 'localhost',
             'path': '/',
         },
-        timestamp='2022-10-12 10:05:21.123456',
+        timestamp=datetime.strptime(
+            '2022-10-12 10:05:21.123456',
+            DEFAULT_DATETIME_FORMAT,
+        ),
     )
 
 

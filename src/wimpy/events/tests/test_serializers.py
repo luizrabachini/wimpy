@@ -3,8 +3,9 @@ from unittest import mock
 
 import pytest
 from django.conf import settings
+from django.test import override_settings
 
-from wimpy.events.models import EventCategory, EventSchema, EventType
+from wimpy.events.models import Event, EventCategory, EventSchema, EventType
 from wimpy.events.serializers import EventSerializer
 from wimpy.helpers.data import serialize_data
 
@@ -175,3 +176,49 @@ class TestEventSerializer:
         serializer: EventSerializer = EventSerializer(data=valid_event_data)
         serializer.is_valid()
         assert serializer.validated_data['idempotency_key']
+
+    @override_settings(ASYNC_EVENTS_ENABLED=False)
+    def test_should_create_event_sync(self, valid_event_data: Dict):
+        serializer: EventSerializer = EventSerializer(data=valid_event_data)
+        serializer.is_valid()
+        result: Event = serializer.save()
+        assert Event.objects.count() == 1
+        assert result.id
+
+    @override_settings(ASYNC_EVENTS_ENABLED=True)
+    def test_should_create_event_async(self, caplog, valid_event_data: Dict):
+        with mock.patch.object(
+            EventSerializer,
+            'kafka_producer'
+        ) as producer_mock:
+            serializer: EventSerializer = EventSerializer(
+                data=valid_event_data
+            )
+            serializer.is_valid()
+            result: Event = serializer.save()
+            assert Event.objects.count() == 0
+            producer_mock.send.assert_called_once_with(
+                settings.ASYNC_EVENTS_TOPIC,
+                valid_event_data
+            )
+            assert not result.id
+            assert 'Sending data' in caplog.text
+            assert 'Data sent with result' in caplog.text
+
+    @override_settings(ASYNC_EVENTS_ENABLED=True)
+    def test_should_raise_erro_with_event_async(
+        self,
+        caplog,
+        valid_event_data: Dict
+    ):
+        with mock.patch.object(
+            EventSerializer,
+            'kafka_producer'
+        ) as producer_mock:
+            serializer: EventSerializer = EventSerializer(
+                data=valid_event_data
+            )
+            serializer.is_valid()
+            producer_mock.send.side_effect = Exception('Ploft!')
+            with pytest.raises(Exception):
+                serializer.save()
