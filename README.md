@@ -2,6 +2,8 @@
 
 Events tracking application to collect data across multiple origins.
 
+[![CircleCI](https://circleci.com/gh/luizrabachini/wimpy/tree/main.svg?style=svg)](https://circleci.com/gh/luizrabachini/wimpy/tree/main) [![Coverage Status](https://coveralls.io/repos/github/luizrabachini/wimpy/badge.svg?branch=main)](https://coveralls.io/github/luizrabachini/wimpy?branch=main)
+
 [![Wimpy](docs/images/wimpy.png)](https://en.wikipedia.org/wiki/J._Wellington_Wimpy)
 
 

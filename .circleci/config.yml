@@ -10,6 +10,7 @@ jobs:
       - run: sudo apt install libmariadb-dev
       - run: pip install -r requirements/test.txt
       - run: pytest
+      - run: coveralls
 
 workflows:
   build_and_test:
