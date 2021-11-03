@@ -1,2 +1,2 @@
-libmysqlclient-dev
+libmariadb-dev
 mariadb-client
